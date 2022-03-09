@@ -1,8 +1,6 @@
 
-
-
-local _tostring
-_tostring = function(var, tab)
+local var_tostring
+var_tostring = function(var, tab)
     tab = tab or ""
 
     local t = type(var)
@@ -13,8 +11,14 @@ _tostring = function(var, tab)
     elseif t == "boolean" then
         return var and "true" or "false"
     elseif t == "table" then
-        local strs = {"{\n"}
+        local keys = {}
         for k,v in pairs(var) do
+            table.insert(keys, k)
+        end
+        table.sort(keys)
+
+        local strs = {"{\n"}
+        for i,k in ipairs(keys) do
             table.insert(strs, tab)
             table.insert(strs, "    [")
 
@@ -27,8 +31,8 @@ _tostring = function(var, tab)
                 --k not supported
                 table.insert(strs, string.format("%q", tostring(k)))
             end
-            table.insert(strs, "]=")
-            table.insert(strs, _tostring(v, tab.."    "))
+            table.insert(strs, "] = ")
+            table.insert(strs, var_tostring(var[k], tab.."    "))
             table.insert(strs, ",\n")
         end
         table.insert(strs, tab)
@@ -42,5 +46,6 @@ _tostring = function(var, tab)
 end
 
 
-return _tostring
+
+return var_tostring
 
